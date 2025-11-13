@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI UX라이터 제민희 개발기 - 우아한형제들 기술 리포트</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Georgia, serif;
+            background: #f8f8f8;
+            color: #1a1a1a;
+            line-height: 1.4;
+            font-size: 11pt;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+        }
+        
+        .header {
+            border-bottom: 4px double #000;
+            padding: 20px 40px 15px;
+            background: white;
+        }
+        
+        .masthead {
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .publication-name {
+            font-size: 42pt;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .publication-subtitle {
+            font-size: 9pt;
+            letter-spacing: 3px;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+        
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 8pt;
+            padding: 8px 0;
+            border-bottom: 1px solid #000;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding: 25px 40px;
+            column-count: 3;
+        }
+        
+        .lead-article {
+            grid-column: 1 / 3;
+            border-right: 1px solid #ddd;
+            padding-right: 20px;
+        }
+        
+        .sidebar {
+            grid-column: 3;
+            padding-left: 20px;
+        }
+        
+        .headline {
+            font-size: 28pt;
+            font-weight: bold;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 8px;
+        }
+        
+        .subhead {
+            font-size: 13pt;
+            font-style: italic;
+            margin-bottom: 15px;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        .byline {
+            font-size: 9pt;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .byline strong {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .drop-cap::first-letter {
+            float: left;
+            font-size: 52pt;
+            line-height: 42pt;
+            padding-right: 8px;
+            margin-top: 3px;
+            font-weight: bold;
+        }
+        
+        .article-text {
+            text-align: justify;
+            hyphens: auto;
+            line-height: 1.45;
+        }
+        
+        .article-text p {
+            margin-bottom: 10px;
+        }
+        
+        .section-header {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 18px 0 10px;
+            padding: 5px 0;
+            border-top: 2px solid #000;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .pullquote {
+            border-left: 4px solid #000;
+            padding-left: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            font-size: 12pt;
+            line-height: 1.5;
+            background: #fafafa;
+            padding: 12px 12px 12px 18px;
+        }
+        
+        .stats-box {
+            border: 2px solid #000;
+            padding: 15px;
+            margin: 15px 0;
+            background: white;
+        }
+        
+        .stats-box h3 {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+        
+        .stats-list {
+            list-style: none;
+            font-size: 9.5pt;
+            line-height: 1.6;
+        }
+        
+        .stats-list li {
+            padding: 4px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+        
+        .stats-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .stats-list strong {
+            font-weight: bold;
+        }
+        
+        .sidebar-article {
+            border-top: 2px solid #000;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .sidebar-article h3 {
+            font-size: 13pt;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        
+        .sidebar-article p {
+            font-size: 9.5pt;
+            line-height: 1.4;
+            text-align: justify;
+            margin-bottom: 8px;
+        }
+        
+        .chart-container {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border: 1px solid #000;
+        }
+        
+        .chart-title {
+            font-size: 9pt;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .chart-source {
+            font-size: 7pt;
+            text-align: right;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .technical-detail {
+            background: #f5f5f5;
+            border-left: 3px solid #000;
+            padding: 10px 12px;
+            margin: 12px 0;
+            font-size: 9.5pt;
+        }
+        
+        .column-break {
+            break-after: column;
+        }
+        
+        .timeline {
+            list-style: none;
+            border-left: 2px solid #000;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        
+        .timeline li {
+            position: relative;
+            margin-bottom: 12px;
+            font-size: 9.5pt;
+            padding-left: 10px;
+        }
+        
+        .timeline li::before {
+            content: '●';
+            position: absolute;
+            left: -20px;
+            font-size: 14pt;
+        }
+        
+        .timeline strong {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .footer {
+            border-top: 3px double #000;
+            padding: 15px 40px;
+            font-size: 8pt;
+            text-align: center;
+            background: #f8f8f8;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+            border-top: 3px solid #000;
+            border-bottom: 3px solid #000;
+            padding: 20px 0;
+            margin: 20px 0;
+        }
+        
+        .three-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .column {
+            padding: 0 10px;
+        }
+        
+        .column:not(:last-child) {
+            border-right: 1px solid #ccc;
+        }
+        
+        .emphasis-box {
+            background: #000;
+            color: white;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 10pt;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="masthead">
+                <div class="publication-name">Tech Review</div>
+                <div class="publication-subtitle">Enterprise Technology Intelligence Report</div>
+            </div>
+            <div class="meta-info">
+                <span>2025년 11월 13일 수요일</span>
+                <span>우아한형제들 기술연구소</span>
+                <span>Issue No. 23836</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="lead-article">
+                <div class="headline">
+                    AI UX라이터 '제민희' 탄생기
+                </div>
+                <div class="subhead">
+                    규칙 기반에서 RAG로의 여정—UX라이터와 개발자가 함께 만든 사내 AI 라이팅 툴의 실패와 성취
+                </div>
+                <div class="byline">
+                    <strong>기고</strong> 장민우(UX라이터), 이재원(개발자) | 우아한형제들
+                </div>
+                
+                <div class="article-text">
+                    <p class="drop-cap">우아한형제들이 자체 개발한 AI UX라이팅 툴 '제민희'가 사내에 공개됐다. 이는 단순한 자동화 도구가 아닌, 서로 다른 전문성을 가진 직군 간 협업을 통해 탄생한 혁신 사례로 평가받고 있다. 프로젝트 초기 규칙 기반 설계의 실패를 딛고 RAG(검색 증강 생성) 기술로 전환하며 완성된 이 도구는, 기업 내 AI 도입의 새로운 방향성을 제시한다.</p>
+                    
+                    <p><strong>배경: 검수 병목의 구조적 문제</strong></p>
+                    
+                    <p>우아한형제들의 서비스가 고도화되면서 UX라이터들이 처리해야 할 문구 검수 요청이 급증했다. 전체 검수 요청을 분석한 결과, 47.3%가 '가이드 원칙 일관성 체크'와 '명확한 의미 전달을 위한 문구 수정'으로, 패턴화 가능한 업무였다. 이는 곧 자동화의 여지가 있음을 의미했다.</p>
+                    
+                    <div class="pullquote">
+                        "패턴화 가능한 문구 검수 요청에 대해 가이드에 기반하여 일관성 있는 답변을 전달하는 것" — 프로젝트의 핵심 목표
+                    </div>
+                    
+                    <div class="section-header">3주간의 기술 검증과 실패</div>
+                    
+                    <p>초기 접근법은 '규칙 기반' 시스템이었다. LLM의 확률적 답변 생성 방식이 일관성을 해칠 수 있다는 판단 때문이었다. 개발팀은 네이버 맞춤법 검사기와 카카오의 형태소 분석기 Khaiii를 조합하는 방안을 검토했다.</p>
+                    
+                    <div class="technical-detail">
+                        <strong>기술적 장애물</strong><br>
+                        • 상용 도구의 제한적 커스터마이징<br>
+                        • 배민 고유 명칭·용어 처리 불가<br>
+                        • Khaiii의 개발 중단(CNN → 트랜스포머 패러다임 전환)<br>
+                        • CNN 모델 수정의 기술적 난이도
+                    </div>
+                    
+                    <p>결국 3주간의 시도 끝에 팀은 이 방법의 한계를 인정했다. 카카오브레인이 GPT와 같은 트랜스포머 아키텍처로의 전환을 선언하며 Khaiii 지원을 중단했고, CNN 기반 모델의 커스터마이징은 예상보다 훨씬 복잡했다.</p>
+                    
+                    <div class="section-header">RAG로의 방향 전환</div>
+                    
+                    <p>전환점은 강수진의 『프롬프트 엔지니어의 업무일지』를 접한 순간이었다. "일관성 100% 보장"에서 "답변 확률 극대화"로 목표를 조정하면서 검색 증강 생성(RAG)이 대안으로 떠올랐다.</p>
+                    
+                    <p>RAG는 AI에게 '오픈북 테스트'를 보게 하는 방식이다. AI가 스스로 답을 생성하기 전, 먼저 참고 자료(라이팅 가이드)를 검색하고, 이를 근거로 답변을 생성한다. 허언(hallucination) 가능성을 줄이고 신뢰성을 높이는 구조다.</p>
+                    
+                    <p><strong>가이드의 재설계</strong></p>
+                    
+                    <p>그러나 새로운 문제가 발생했다. 기존 라이팅 가이드는 이미지와 예시가 혼합된 '사람 중심' 구조였다. AI가 이해하려면 텍스트 기반으로 재구성해야 했다.</p>
+                    
+                    <div class="technical-detail">
+                        <strong>[사람 중심 → AI 중심 변환 사례]</strong><br>
+                        AS-IS: '만원의 행복' 배너 이미지 + "관용적 표현은 1 생략 가능"<br>
+                        TO-BE: "광고·프로모션 마케팅 문구 작성 시, '1만원', '1천원'에서 숫자 '1' 생략하여 '만원', '천원'으로 표기 가능"
+                    </div>
+                    
+                    <p>UX라이터의 역할이 '사람을 위한 글쓰기'에서 'AI를 위한 글쓰기'로 확장되는 순간이었다.</p>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="stats-box">
+                    <h3>프로젝트 핵심 지표</h3>
+                    <ul class="stats-list">
+                        <li><strong>검수 자동화 범위:</strong> 47.3%</li>
+                        <li><strong>대상 업무:</strong> 가이드 일관성 체크</li>
+                        <li><strong>기술 검증 기간:</strong> 3주</li>
+                        <li><strong>최종 모델:</strong> Google Gemini</li>
+                        <li><strong>구현 방식:</strong> RAG (시스템 프롬프트)</li>
+                        <li><strong>저장소:</strong> IndexedDB</li>
+                    </ul>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">검수 요청 유형 분포</div>
+                    <canvas id="requestChart" width="250" height="250"></canvas>
+                    <div class="chart-source">출처: 우아한형제들 내부 데이터</div>
+                </div>
+                
+                <div class="sidebar-article">
+                    <h3>컨텍스트 엔지니어링의 4가지 핵심</h3>
+                    <p><strong>1. 작업 순서 정의</strong><br>
+                    문구 구조 분석 → 필수 정보 확인 → 작성 위치 확인 → 가이드 일관성 확인 → 간결성 고려 → 수정안 도출 → 근거 제시</p>
+                    
+                    <p><strong>2. 가이드 기반 의사결정</strong><br>
+                    AI의 주관적 판단 차단. 모든 수정안은 '라이팅 가이드' 또는 '과거 검토 사례'에 근거.</p>
+                    
+                    <p><strong>3. 명확한 예외 처리</strong><br>
+                    가이드에 없는 요청은 허위 답변 대신 "시니어 라이터에게 문의 요망" 안내.</p>
+                    
+                    <p><strong>4. 일관된 답변 포맷</strong><br>
+                    AS-IS(입력) / TO-BE(수정) / 수정 근거 구조로 통일.</p>
+                </div>
+                
+                <div class="sidebar-article">
+                    <h3>기술 선택의 이유</h3>
+                    <p><strong>Gemini vs ChatGPT</strong><br>
+                    최종적으로 Google Gemini를 선택한 배경에는 네 가지 기준이 작용했다: (1)한국어 이해도 (2)응답 속도 (3)멀티모달 지원 (4)논리적 추론 능력.</p>
+                    
+                    <p>특히 Gemini는 처음부터 '추론'을 기준으로 설계된 모델이며, 복잡한 작업에서도 명확한 수정 근거를 제시할 수 있다. 또한 커다란 컨텍스트 유지 능력은 이미지 문구 제안, 피그마 연동 등 장기적 확장성을 고려할 때 최적이었다.</p>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">프로젝트 단계별 소요 기간</div>
+                    <canvas id="timelineChart" width="250" height="200"></canvas>
+                    <div class="chart-source">출처: 프로젝트 팀 내부 기록</div>
+                </div>
+            </div>
+            
+            <div class="full-width">
+                <div class="emphasis-box">
+                    기술 구현: PoC에서 프로덕션까지
+                </div>
+                
+                <div class="three-column">
+                    <div class="column">
+                        <h3 class="section-header" style="font-size: 11pt;">RAG 구현 전략</h3>
+                        <p style="font-size: 9.5pt;">일반적인 RAG 구현에는 Vector DB가 필수로 여겨지지만, 팀은 빠른 PoC(개념 증명)를 위해 다른 접근을 택했다. UX라이터가 직접 관리하는 가이드를 시스템 프롬프트로 저장하고, 필요한 지식을 그대로 프롬프트에 '검색 증강'하는 방식이다.</p>
+                        
+                        <p style="font-size: 9.5pt;">이는 RAG의 본질—검색을 통해 보강하여 생성—에 충실하면서도 서버 비용 없이 구현 가능한 최소 기능 제품(MVP)이었다. Vector DB는 '검색' 단계를 효율화하는 도구 중 하나일 뿐, RAG의 필수 요소가 아니라는 점을 증명한 사례다.</p>
+                    </div>
+                    
+                    <div class="column">
+                        <h3 class="section-header" style="font-size: 11pt;">컨텍스트 유지 메커니즘</h3>
+                        <p style="font-size: 9.5pt;">대화 맥락을 유지하기 위해 브라우저의 'IndexedDB'를 활용했다. 서버 없이도 브라우저 자체에 데이터를 저장하고 필요시 불러오는 구조다.</p>
+                        
+                        <p style="font-size: 9.5pt;"><strong>토큰 관리의 중요성:</strong> 토큰은 AI의 '마나'와 같다. 컨텍스트 창(Context Window)이라 불리는 최대 토큰량을 넘으면 초기 정보가 손실된다. 예컨대 최대 토큰 4,000인 모델에 5,000 토큰을 입력하면 앞의 1,000 토큰은 기억하지 못한다. 팀은 토큰 수가 일정 범위를 초과하면 내용을 자동 축약하는 기능을 추가해 이를 해결했다.</p>
+                    </div>
+                    
+                    <div class="column">
+                        <h3 class="section-header" style="font-size: 11pt;">UX 최적화</h3>
+                        <p style="font-size: 9.5pt;"><strong>역질문 설계:</strong> 사용자가 핵심 정보(예: 텍스트 노출 위치)를 누락하면, AI가 능동적으로 "해당 텍스트가 어느 UI 컴포넌트(토스트, 버튼 등)에 노출될 예정인지 알려주실 수 있을까요?"라고 역질문한다.</p>
+                        
+                        <p style="font-size: 9.5pt;"><strong>용어 자동 매칭:</strong> 직군마다 다른 용어를 사용하는 현실을 반영해, 사용자가 '제목', '본문'처럼 익숙한 단어를 써도 AI가 '타이틀', '디스크립션' 같은 시스템 용어로 자동 변환한다. 사용자는 정확한 가이드 용어를 몰라도 편하게 질문할 수 있다.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lead-article">
+                <div class="section-header">구현 세부 사항과 기술적 고려사항</div>
+                
+                <div class="article-text">
+                    <p><strong>LLM 모델 선정 과정</strong></p>
+                    
+                    <p>팀은 사내에서 사용 중이던 Gemini와 사용자 기반이 큰 ChatGPT를 최종 후보로 좁혔다. 평가 기준은 (1)한국어 이해도 (2)응답 속도 (3)멀티모달 지원 (4)논리적 추론 능력이었다.</p>
+                    
+                    <p>최종 선택은 Gemini였다. 처음부터 추론에 최적화된 설계, 토큰 사용량이 많은 멀티모달 환경에서의 강점, 그리고 복잡한 작업에서도 명확한 근거를 제시할 수 있는 능력이 결정적이었다. 특히 이미지 기반 문구 제안, 피그마 연동 등 장기적 확장성을 고려할 때 Gemini의 큰 컨텍스트 유지 능력은 필수적이었다.</p>
+                    
+                    <div class="pullquote">
+                        "기본적인 맞춤법 검증에, 배민의 정체성이 담긴 UX라이팅 규칙까지 검증하는 로직을 넣어야 했습니다. 이건 너무나 방대한 양일뿐더러, 모든 케이스를 커버할 수도 없었죠." — 개발팀 회고
+                    </div>
+                    
+                    <p><strong>시스템 프롬프트 구성</strong></p>
+                    
+                    <p>컨텍스트 엔지니어링의 핵심은 AI가 따라야 할 명확한 작업 규칙을 설계하는 것이다. 시스템 프롬프트는 네 가지 핵심 요소로 구성됐다:</p>
+                    
+                    <p><strong>① 작업 순서 정의:</strong> 요청 문구 구조 분석 → 목적에 따른 필수 정보 확인 → 작성 위치 확인 → 가이드 일관성 확인 → 간결성 고려 → 수정안 도출 → 근거 제시. 이 워크플로를 명시함으로써 AI의 사고 과정을 표준화했다.</p>
+                    
+                    <p><strong>② 가이드 기반 의사결정:</strong> AI가 "제 생각엔..."과 같은 주관적 판단을 내리지 못하도록 차단했다. 모든 수정안은 '라이팅 가이드' 또는 '과거 검토 사례'에 근거해야 하며, 답변 시 어떤 가이드를 참조했는지 명시하도록 했다.</p>
+                    
+                    <p><strong>③ 명확한 예외 처리:</strong> 가이드에 없는 요청에 대해 AI가 그럴듯한 거짓말(hallucination)을 하는 것을 방지했다. 이 경우 "해당 내용은 가이드에 정의되지 않습니다. 담당 시니어 라이터에게 문의해 주세요"처럼 정해진 경로로 안내한다.</p>
+                    
+                    <p><strong>④ 일관된 답변 포맷:</strong> AS-IS(입력 문구), TO-BE(수정 문구), 수정 근거로 구분된 서식으로만 답을 제공한다. 이를 통해 사용자가 답변의 신뢰도를 즉각 인지할 수 있다.</p>
+                    
+                    <div class="section-header">프로젝트의 의미와 향후 계획</div>
+                    
+                    <p>제민희 프로젝트의 가장 큰 성과는 툴 자체가 아니라, 서로 다른 전문성을 가진 직군이 '진짜 문제'를 해결하기 위해 서로의 언어를 배운 과정에 있다. 개발자는 '왜' 이 기능이 필요한지 공감하게 되었고, UX라이터는 '어떻게' 기술적으로 구현되는지 이해하게 되었다.</p>
+                    
+                    <p>프로젝트 초기 UX라이터는 기능의 필요성을 나열했고, 개발자는 이유를 이해하기 전에 기술적 제약부터 설명했다. 그러나 함께 문제를 정의하고, 함께 실패하고, 함께 대안을 찾는 과정에서 두 직군은 공통의 언어를 만들어냈다.</p>
+                    
+                    <div class="pullquote">
+                        "툴 이름을 '제민희'라고 지은 이유는, AI와 무수히 많은 대화를 주고받다 보니 사용자들도 이 툴의 성장을 응원하며 동료로서 의지해주길 바라는 마음이 들었기 때문입니다. Gemini(제미나이)를 한글 발음으로 읽으면 '제민희'와 소리가 비슷하더라구요." — UX라이터 장민우
+                    </div>
+                    
+                    <p><strong>향후 방향</strong></p>
+                    
+                    <p>제민희는 현재 '신입 UX라이터' 페르소나로 설정돼 있지만, 더 많은 사용자 피드백과 데이터를 만나며 성장할 것이다. 단순히 반복적인 검수 비효율을 해결하는 것을 넘어, 사용자의 의도를 더 깊이 파악하고 창의적인 라이팅을 돕는 든든한 '동료'로 자리매김하는 것이 다음 목표다.</p>
+                    
+                    <p>팀은 제민희가 '시니어 라이터'로 성장하는 그날까지 지속적인 개선을 이어갈 계획이다. 이는 단순한 기능 추가가 아니라, 더 많은 사용 패턴을 수집하고 더 풍부한 컨텍스트를 구축하는 과정이 될 것이다.</p>
+                </div>
+                
+                <ul class="timeline" style="margin-top: 20px;">
+                    <li><strong>문제 정의</strong>검수 요청 47.3%가 패턴화 가능함을 발견, 자동화 타겟 명확화</li>
+                    <li><strong>규칙 기반 시도 (3주)</strong>네이버 맞춤법 검사기 + Khaiii 조합 검토, 기술적 한계로 실패</li>
+                    <li><strong>RAG 전환</strong>일관성 100% → 답변 확률 극대화로 목표 조정, RAG 방식 도입</li>
+                    <li><strong>가이드 재설계</strong>사람 중심 가이드를 AI 친화적 텍스트로 전면 재구성</li>
+                    <li><strong>컨텍스트 엔지니어링</strong>시스템 프롬프트 4대 핵심 요소 설계 및 구현</li>
+                    <li><strong>PoC 완성</strong>Gemini + IndexedDB 기반 최소 기능 제품 출시</li>
+                    <li><strong>향후 계획</strong>피드백 수집 및 멀티모달 확장 (이미지 제안, 피그마 연동)</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar">
+                <div class="sidebar-article" style="border-top: 3px solid #000; padding-top: 15px;">
+                    <h3>전문가 논평</h3>
+                    <p style="font-size: 9pt; line-height: 1.45;"><strong>AI 도입의 새로운 패러다임</strong></p>
+                    <p style="font-size: 9pt; line-height: 1.45;">제민희 프로젝트는 기업 내 AI 도입의 전형적인 함정—완벽주의와 과도한 기술 의존—을 피한 모범 사례다. 초기 규칙 기반 접근의 실패를 인정하고 신속히 방향을 전환한 점, Vector DB 없이도 RAG의 본질을 구현한 점, 그리고 무엇보다 직군 간 협업을 통해 문제를 재정의한 점이 인상적이다.</p>
+                    
+                    <p style="font-size: 9pt; line-height: 1.45;">특히 주목할 부분은 '가이드의 AI 친화적 재구성'이다. 이는 단순한 데이터 변환이 아니라, UX라이터가 AI의 인지 특성을 이해하고 새로운 형태의 문서 작성법을 학습한 과정이다. 이러한 '인간-AI 협업 리터러시'는 앞으로 모든 직군에 필요한 역량이 될 것이다.</p>
+                </div>
+                
+                <div class="chart-container" style="margin-top: 20px;">
+                    <div class="chart-title">기술 스택 구성</div>
+                    <canvas id="techStackChart" width="250" height="200"></canvas>
+                    <div class="chart-source">출처: 프로젝트 기술 문서</div>
+                </div>
+                
+                <div class="sidebar-article">
+                    <h3>참고: RAG vs 규칙 기반</h3>
+                    <div style="font-size: 9pt; line-height: 1.5;">
+                        <p><strong>규칙 기반 시스템</strong><br>
+                        • 입력과 데이터 1:1 매칭<br>
+                        • 동일 입력 → 동일 출력 보장<br>
+                        • 규칙 추가/변경 시 대규모 개발 필요<br>
+                        • 모든 케이스 커버 불가능</p>
+                        
+                        <p><strong>RAG 시스템</strong><br>
+                        • 참고 자료 기반 생성<br>
+                        • 확률적 일관성 (99.9%+)<br>
+                        • 가이드 수정만으로 즉시 반영<br>
+                        • 예외 상황 유연하게 처리</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Tech Review</strong> | Enterprise Technology Intelligence Report</p>
+            <p>본 리포트는 우아한형제들 기술블로그 공개 자료를 기반으로 작성되었습니다.</p>
+            <p>원문: https://techblog.woowahan.com/23836/ | 발행일: 2025년 11월 13일</p>
+        </div>
+    </div>
+    
+    <script>
+        // 검수 요청 유형 분포 차트
+        const ctx1 = document.getElementById('requestChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: ['패턴화 가능 (47.3%)', '개별 검토 필요 (52.7%)'],
+                datasets: [{
+                    data: [47.3, 52.7],
+                    backgroundColor: ['#000000', '#cccccc'],
+                    borderColor: ['#000000', '#888888'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: "'Times New Roman', serif",
+                                size: 9
+                            },
+                            boxWidth: 12,
+                            padding: 8
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 프로젝트 단계별 소요 기간 차트
+        const ctx2 = document.getElementById('timelineChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['문제 정의', '규칙 기반\n시도', 'RAG 전환', '가이드\n재설계', '구현/PoC'],
+                datasets: [{
+                    label: '주',
+                    data: [1, 3, 1, 2, 3],
+                    backgroundColor: '#000000',
+                    borderColor: '#000000',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                family: "'Times New Roman', serif",
+                                size: 9
+                            }
+                        },
+                        grid: {
+                            color: '#dddddd'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                family: "'Times New Roman', serif",
+                                size: 8
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 기술 스택 구성 차트
+        const ctx3 = document.getElementById('techStackChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: ['Gemini LLM', 'RAG 시스템', 'IndexedDB', '프롬프트 엔지니어링'],
+                datasets: [{
+                    data: [30, 25, 20, 25],
+                    backgroundColor: ['#000000', '#444444', '#888888', '#cccccc'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: "'Times New Roman', serif",
+                                size: 8
+                            },
+                            boxWidth: 10,
+                            padding: 6
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
