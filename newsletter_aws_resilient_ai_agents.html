@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS가 제시하는 복원력 있는 AI 에이전트 구축 프레임워크</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Pretendard Variable", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: #faf8f5;
+            color: #2d2d2d;
+            line-height: 1.7;
+            padding: 20px;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(201, 69, 31, 0.08);
+            animation: fade-in 0.6s ease;
+        }
+        
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #FF9900 0%, #FF6B00 100%);
+            padding: 48px 40px;
+            color: #ffffff;
+        }
+        
+        .header-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        
+        .header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+        
+        .header-meta {
+            font-size: 14px;
+            opacity: 0.85;
+            font-weight: 500;
+        }
+        
+        .content {
+            padding: 48px 40px;
+        }
+        
+        .intro {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #3d3d3d;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid #f0ebe5;
+            animation: fade-slide-up 0.6s ease 0.2s both;
+        }
+        
+        .intro p {
+            margin-bottom: 16px;
+        }
+        
+        .intro p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .intro strong {
+            color: #FF9900;
+            font-weight: 600;
+        }
+        
+        .intro ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 20px 0;
+        }
+        
+        .intro ul li {
+            padding-left: 28px;
+            margin-bottom: 10px;
+            position: relative;
+            line-height: 1.7;
+        }
+        
+        .intro ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #FF9900;
+            font-weight: 600;
+            font-size: 20px;
+        }
+        
+        @keyframes fade-slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            animation: fade-slide-up 0.6s ease both;
+        }
+        
+        .section:nth-child(2) { animation-delay: 0.3s; }
+        .section:nth-child(3) { animation-delay: 0.4s; }
+        .section:nth-child(4) { animation-delay: 0.5s; }
+        .section:nth-child(5) { animation-delay: 0.6s; }
+        .section:nth-child(6) { animation-delay: 0.7s; }
+        
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #FF9900;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-emoji {
+            font-size: 28px;
+        }
+        
+        .section-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #3d3d3d;
+        }
+        
+        .section-content p {
+            margin-bottom: 16px;
+        }
+        
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .highlight-box {
+            background: #fff9f5;
+            border-left: 4px solid #FF9900;
+            padding: 20px 24px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .highlight-box p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .highlight-box strong {
+            color: #FF9900;
+        }
+        
+        .code-box {
+            background: #2d2d2d;
+            color: #f0ebe5;
+            padding: 20px 24px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .code-box code {
+            color: #FF9900;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        
+        .metric-card {
+            background: #faf8f5;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f0ebe5;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(255, 153, 0, 0.12);
+        }
+        
+        .metric-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #8d6e5f;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-value {
+            font-family: 'Fraunces', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #FF9900;
+            margin-bottom: 8px;
+        }
+        
+        .metric-desc {
+            font-size: 14px;
+            color: #5d5d5d;
+            line-height: 1.5;
+        }
+        
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 16px 0;
+        }
+        
+        .bullet-list li {
+            padding-left: 32px;
+            margin-bottom: 12px;
+            position: relative;
+            line-height: 1.7;
+        }
+        
+        .bullet-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #FF9900;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .dimension-card {
+            background: #ffffff;
+            border: 2px solid #f0ebe5;
+            padding: 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .dimension-card:hover {
+            border-color: #FF9900;
+            box-shadow: 0 4px 12px rgba(255, 153, 0, 0.1);
+        }
+        
+        .dimension-title {
+            font-weight: 700;
+            color: #FF9900;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .dimension-desc {
+            font-size: 13px;
+            color: #5d5d5d;
+            line-height: 1.6;
+        }
+        
+        .cta-box {
+            background: linear-gradient(135deg, #FF9900 0%, #FF6B00 100%);
+            color: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .cta-box h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+        
+        .cta-box p {
+            font-size: 15px;
+            line-height: 1.7;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #ffffff;
+            color: #FF9900;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer {
+            background: #faf8f5;
+            padding: 32px 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #8d6e5f;
+            border-top: 1px solid #f0ebe5;
+        }
+        
+        .footer p {
+            margin-bottom: 8px;
+        }
+        
+        .footer a {
+            color: #FF9900;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            
+            .header {
+                padding: 32px 24px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .content {
+                padding: 32px 24px;
+            }
+            
+            .intro {
+                font-size: 16px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+            
+            .metric-grid, .dimension-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-label">AWS Architecture Blog</div>
+            <h1>AWS가 제시하는 복원력 있는 AI 에이전트 구축 프레임워크</h1>
+            <div class="header-meta">7차원 리스크 분석으로 5대 장애 모드 미리 막기</div>
+        </div>
+        
+        <div class="content">
+            <div class="intro">
+                <p>프로덕션 AI 에이전트가 갑자기 무한 루프에 빠지면서 Lambda 함수를 계속 호출하고, CloudWatch 대시보드에 빨간 불이 켜지며 비용 그래프가 수직 상승하는 경험 해보셨나요? 그것도 주말 새벽 2시에 알람이 터지는 그 느낌. "이거 어떻게 막아야 하지?" 싶죠.</p>
+                
+                <p>이런 문제가 생기는 이유는 AI 에이전트가 전통적인 소프트웨어와 근본적으로 다르기 때문입니다. 자율적으로 결정을 내리고, 엄청난 컴퓨팅 자원을 소비하며, 예측 불가능한 방식으로 외부 시스템과 상호작용하거든요. 기존의 서킷 브레이커나 리트라이 패턴만으로는 AI 에이전트 특유의 장애 모드를 막을 수 없습니다.</p>
+                
+                <p>이 글에서는 AWS가 제시하는 <strong>7차원 리스크 분석 프레임워크</strong>와 실전에서 자주 발생하는 5가지 주요 장애 모드를 어떻게 완화할 수 있는지 정리해 봅니다. 특히 다음 내용을 중심으로 살펴볼 거예요.</p>
+                
+                <ul>
+                    <li><strong>AI 에이전트 프로덕션 장애가 전통적 소프트웨어와 다른 이유</strong> - 자율성, 자원 소비, 예측 불가능성</li>
+                    <li><strong>7차원으로 쪼개서 복원력 리스크 찾는 프레임워크</strong> - Foundation models부터 Evaluation까지</li>
+                    <li><strong>Shared fate와 용량 부족 막는 격리·스케일링 전략</strong> - Circuit breaker, RPM/TPM 계산</li>
+                    <li><strong>85% 지연 감소시키는 프롬프트 캐싱과 비동기 처리</strong> - Bedrock 최적화 기법</li>
+                    <li><strong>잘못된 응답 방지하는 Guardrails와 Human-in-the-loop</strong> - 정확도 확보 메커니즘</li>
+                    <li><strong>단일 장애점 제거하는 다중 리전·도구 이중화</strong> - Cross-Region inference 활용</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">🏗️</span>
+                    7차원 리스크 분석 프레임워크
+                </h2>
+                <div class="section-content">
+                    <p>복원력 리스크를 식별하려면 AI 에이전트 시스템을 구성 요소별로 쪼개서 봐야 합니다. AWS는 7가지 차원으로 분류했죠.</p>
+                    
+                    <div class="dimension-grid">
+                        <div class="dimension-card">
+                            <div class="dimension-title">1. Foundation Models</div>
+                            <div class="dimension-desc">핵심 추론·계획 능력 제공. 배포 방식(EC2 자체 관리 vs SageMaker vs Bedrock)에 따라 책임 범위 결정</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dimension-title">2. Agent Orchestration</div>
+                            <div class="dimension-desc">여러 에이전트·도구 조율. 도구 선택 로직, 사람 에스컬레이션 트리거, 다단계 워크플로 관리</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dimension-title">3. Infrastructure</div>
+                            <div class="dimension-desc">에이전트 실행 하드웨어·시스템. EC2, ECS, Bedrock AgentCore Runtime 등 선택지 존재</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dimension-title">4. Knowledge Base</div>
+                            <div class="dimension-desc">벡터 DB 저장소, 임베딩 모델, 데이터 파이프라인. RAG 애플리케이션 기반. Bedrock Knowledge Bases 활용 가능</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dimension-title">5. Agent Tools</div>
+                            <div class="dimension-desc">API 도구, MCP 서버, 메모리 관리, 프롬프트 캐싱. 에이전트 능력 확장</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dimension-title">6. Security & Compliance</div>
+                            <div class="dimension-desc">인증·권한, 콘텐츠 검증. Inbound(사용자→에이전트), Outbound(에이전트→리소스) 인증. Bedrock Guardrails 활용</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dimension-title">7. Evaluation & Observability</div>
+                            <div class="dimension-desc">인프라 메트릭부터 추론 트레이스까지 추적. 성능 평가, 행동 이탈 감지. Bedrock AgentCore Observability</div>
+                        </div>
+                    </div>
+                    
+                    <p>이 7차원 분석을 통해 여러분의 AI 에이전트 아키텍처를 매핑하고, 각 차원에서 어떤 복원력 리스크가 발생하는지 식별할 수 있습니다. 그다음 단계는 실제 장애 모드를 이해하고 완화 전략을 수립하는 거죠.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">🛡️</span>
+                    장애 모드 1-2: Shared Fate와 용량 부족
+                </h2>
+                <div class="section-content">
+                    <p><strong>Shared Fate (공유 운명)</strong></p>
+                    
+                    <p>한 컴포넌트의 장애가 시스템 경계를 넘어 전체 에이전트로 확산되는 현상입니다. 예를 들어 RAG 애플리케이션에서 지식 베이스가 관련 없는 검색 결과를 반환하면, 이게 에이전트 워크플로 전체를 무너뜨릴 수 있죠.</p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>격리 전략</strong></p>
+                        <p>→ <strong>Guardrails로 관련성 체크</strong>: 쿼리 오류가 워크플로로 전파되는 것 차단</p>
+                        <p>→ <strong>도구는 각자 격리 도메인</strong>: 커스텀 도구 빌드 시 독립적 containment domain으로 설계</p>
+                        <p>→ <strong>Circuit breaker</strong>: 실패율·레이턴시 모니터링, 의존성 unavailable 시 활성화</p>
+                        <p>→ <strong>Bounded retry</strong>: Exponential backoff + jitter로 비용·경합 제어</p>
+                        <p>→ <strong>Contract-compatible fallback</strong>: 실패한 도구→대안 도구 라우팅 (스키마 일관성 유지)</p>
+                    </div>
+                    
+                    <p>오케스트레이션 차원에서 JSON-RPC 에러 매핑, per-call timeout, 건강한 커넥션 풀 유지가 중요합니다. 격리 경계가 실패하면 <strong>graceful degradation</strong>으로 핵심 기능은 유지하면서 고급 기능만 비활성화하죠.</p>
+                    
+                    <p><strong>Insufficient Capacity (용량 부족)</strong></p>
+                    
+                    <p>과도한 부하가 시스템을 압도하면 성능 저하나 시스템 장애로 이어집니다. AI 에이전트의 용량 계획은 <strong>RPM(Requests Per Minute)</strong>과 <strong>TPM(Tokens Per Minute)</strong> 추정이 핵심인데, 에이전트의 확률적 특성 때문에 어렵죠.</p>
+                    
+                    <div class="code-box">
+// RPM 계산 공식
+<code>RPM = 분당 에이전트 스레드 수 × 스레드당 FM 호출 수
+    = 분당 스레드 수 × (1 + 60/(max_completion_tokens/TPS))</code>
+
+// TPM 계산 공식
+<code>TPM = RPM × 평균 입력 토큰 길이
+    = RPM × (시스템 프롬프트 + 사용자 프롬프트 + 
+      max_completion_tokens × (recursion_limit-1)/recursion_limit)</code>
+                    </div>
+                    
+                    <p>AI 에이전트는 재귀 처리(에이전트가 최종 답변에 도달할 때까지 FM을 반복 호출)를 하기 때문에 예측이 어렵습니다. 첫째, 반복 호출 횟수가 작업 복잡도에 따라 달라지고, 둘째, 각 호출의 토큰 길이도 가변적이거든요.</p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>용량 관리 전략</strong></p>
+                        <p>→ <strong>Recursion limit</strong> 설정: 무한 루프·리소스 낭비 방지</p>
+                        <p>→ <strong>Max completion tokens</strong> 제어: 재귀 체인의 토큰 소비 증가 억제</p>
+                        <p>→ <strong>Lambda reserved concurrency</strong>: 여러 action group 동시 실행 시 리소스 격리</p>
+                        <p>→ <strong>Priority-based queuing</strong>: 용량 한계 도달 시 필수 서비스 우선 처리</p>
+                    </div>
+                    
+                    <p>내부 개발 도구의 경우, 인기 있는 도구가 Lambda 용량 한계에 도달하면 계정 레벨 동시 실행 한도를 늘리거나 provisioned concurrency를 구현하여 대응합니다.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">⚡</span>
+                    장애 모드 3-4: 과도한 지연과 잘못된 응답
+                </h2>
+                <div class="section-content">
+                    <p><strong>Excessive Latency (과도한 지연)</strong></p>
+                    
+                    <p>지연은 사용자 경험을 망치고 처리량을 떨어뜨립니다. AI 에이전트 개발은 속도·비용·정확도의 균형이 필요하죠. 정확도는 사용자 신뢰의 핵심이지만, 높은 정확도를 위해서는 여러 추론 반복이 필요하고 이게 지연을 만듭니다.</p>
+                    
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Prompt Caching</div>
+                            <div class="metric-value">85%</div>
+                            <div class="metric-desc">지연 감소 효과 (Bedrock)</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Async Processing</div>
+                            <div class="metric-value">병렬 실행</div>
+                            <div class="metric-desc">다중 에이전트·도구 동시 처리</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">SLO Metrics</div>
+                            <div class="metric-value">사전 정의</div>
+                            <div class="metric-desc">기대치 관리 및 설계 결정</div>
+                        </div>
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <p><strong>지연 완화 전략</strong></p>
+                        <p>→ <strong>SLO 사전 정의</strong>: 프로젝트 시작 전 응답 시간 목표 설정 (단순 쿼리 vs 분석 작업)</p>
+                        <p>→ <strong>Prompt engineering</strong>: Structured output, 역할 명확화로 추론 효율 개선</p>
+                        <p>→ <strong>Prompt caching</strong>: 반복되는 프롬프트 prefix 저장, 세션 간 재사용 (85% 지연 감소)</p>
+                        <p>→ <strong>Async processing</strong>: 독립적 에이전트 병렬 실행, 도구 백그라운드 실행 중 추론 계속</p>
+                        <p>→ <strong>Streaming compliance</strong>: 생성 중 콘텐츠 검증, 안전한 콘텐츠 즉시 전달</p>
+                    </div>
+                    
+                    <p>Amazon Bedrock의 프롬프트 캐싱은 특히 긴 시스템 프롬프트와 세션 간 안정적인 컨텍스트 정보가 있는 에이전트에 효과적입니다. 비동기 처리는 다중 에이전트 워크플로에서 극적인 속도 향상을 가져오죠.</p>
+                    
+                    <p><strong>Incorrect Agent Response (잘못된 응답)</strong></p>
+                    
+                    <p>잘못된 출력은 사용자 신뢰를 무너뜨립니다. 설정 오류, 소프트웨어 버그, 모델 환각이 원인이죠.</p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>정확도 개선 전략</strong></p>
+                        <p>→ <strong>Deterministic orchestration</strong>: LLM이 즉흥적으로 처리하게 두지 말고 명시적 워크플로 정의</p>
+                        <p>→ <strong>Input/Output guardrails</strong>: Bedrock Guardrails로 입력 검증, 출력에서 환각·유해 콘텐츠·민감 정보 감지</p>
+                        <p>→ <strong>Human-in-the-loop</strong>: 고위험 의사결정에 사람 검증 추가</p>
+                        <p>→ <strong>Automatic retry</strong>: 품질 기준 미달 시 refined prompt로 재시도</p>
+                    </div>
+                    
+                    <p>에이전트가 LLM에 의존하여 작업을 즉흥적으로 처리하도록 두면 의도한 경로에서 벗어날 기회가 생깁니다. 대신 명시적 워크플로를 정의하면 에이전트 간 호출 오류와 도구 호출 실수를 줄일 수 있죠.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">🔄</span>
+                    장애 모드 5: 단일 장애점 제거
+                </h2>
+                <div class="section-content">
+                    <p><strong>Single Point of Failure (단일 장애점)</strong></p>
+                    
+                    <p>이중화는 단일 리소스나 서비스에 여러 컴포넌트가 의존하여 시스템 전체 장애를 일으키는 취약점을 최소화합니다. 효과적인 이중화는 <strong>이중화된 컴포넌트</strong>와 <strong>이중화된 경로</strong> 모두가 필요하죠.</p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>이중화 전략</strong></p>
+                        <p>→ <strong>Multi-Region model deployment</strong>: 자체 관리 모델의 경우 자동 failover 구현</p>
+                        <p>→ <strong>Cross-Region inference</strong>: Bedrock 사용 시 지원 모델에 내장 이중화, 주 엔드포인트 문제 시 자동 대체 리전 라우팅</p>
+                        <p>→ <strong>Tool redundancy</strong>: 주 도구 unavailable 시 유사 기능 제공하는 대안 도구로 자동 라우팅 (graceful degradation)</p>
+                        <p>→ <strong>Permission consistency</strong>: 주 환경과 failover 환경 간 권한 일치 검증 (보안 갭 방지)</p>
+                    </div>
+                    
+                    <p>예를 들어 내부 챗 assistant의 지식 베이스가 실패하면, 검색 도구로 fallback하여 대안 출력을 사용자에게 전달할 수 있습니다. 덜 정교하더라도 완전히 실패하는 것보다 낫죠.</p>
+                    
+                    <p>이중화 환경 전반에 걸쳐 권한 일관성을 유지하는 것도 중요합니다. 과도하게 허용된 액세스 제어는 보안 리스크이기 때문에, 최종 사용자 권한과 도구 레벨 액세스 권한이 주 컴포넌트와 failover 컴포넌트 간에 동일한지 검증해야 합니다.</p>
+                    
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Foundation Models</div>
+                            <div class="metric-value">다중 리전</div>
+                            <div class="metric-desc">Cross-Region inference</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Agent Tools</div>
+                            <div class="metric-value">대안 도구</div>
+                            <div class="metric-desc">자동 fallback 라우팅</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Permissions</div>
+                            <div class="metric-value">일관성 검증</div>
+                            <div class="metric-desc">보안 갭 방지</div>
+                        </div>
+                    </div>
+                    
+                    <p>이중화는 컴포넌트 실패 시 대안 컴포넌트가 인계받고, 한 경로가 unavailable하면 트래픽이 다른 경로로 흐르도록 보장합니다.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">🎯</span>
+                    운영 우수성: DevOps + AI 특화 관행
+                </h2>
+                <div class="section-content">
+                    <p>AI 에이전트의 운영 우수성은 검증된 DevOps 관행과 AI 특화 요구사항을 통합합니다.</p>
+                    
+                    <p><strong>CI/CD 및 IaC</strong></p>
+                    
+                    <p>CI/CD 파이프라인은 에이전트 전체 생명주기를 오케스트레이션하고, Infrastructure as Code는 환경 전반의 배포를 표준화하여 수동 오류를 줄이고 재현성을 향상시킵니다.</p>
+                    
+                    <p><strong>에이전트 관찰성</strong></p>
+                    
+                    <p>전통적 메트릭과 에이전트 특화 신호(추론 트레이스, 도구 호출 결과)를 결합해야 합니다. 시스템 메트릭·로그는 CloudWatch에서 얻을 수 있지만, 에이전트 레벨 트레이싱은 추가 구축이 필요하죠.</p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>Bedrock AgentCore Observability (Preview)</strong></p>
+                        <p>→ OpenTelemetry 지원으로 에이전트 텔레메트리 데이터 통합</p>
+                        <p>→ CloudWatch, Datadog, LangSmith, Langfuse와 연동 가능</p>
+                        <p>→ 추론 트레이스부터 도구 호출까지 전체 가시성 제공</p>
+                    </div>
+                    
+                    <p><strong>테스트 및 검증</strong></p>
+                    
+                    <p>에이전트 테스트는 전통적 소프트웨어 관행을 넘어섭니다. promptfoo 같은 자동 테스트 스위트로 추론 품질, 작업 완성도, 대화 일관성을 평가하죠. 배포 전 체크는 도구 연결성과 지식 접근을 확인하고, Fault injection은 도구 중단·API 실패·데이터 불일치를 시뮬레이션하여 사용자 영향 전에 추론 결함을 드러냅니다.</p>
+                    
+                    <p><strong>문제 발생 시 완화</strong></p>
+                    
+                    <p>Playbook은 인프라 레벨과 에이전트 특화 이슈를 모두 다룹니다. 라이브 세션 중단 없이 fallback 에이전트나 사람 운영자로 원활한 인계를 지원하여 컨텍스트를 유지하죠.</p>
+                    
+                    <ul class="bullet-list">
+                        <li><strong>자동 테스트</strong>: promptfoo로 추론·작업·대화 평가</li>
+                        <li><strong>배포 전 검증</strong>: 도구 연결성, 지식 접근 확인</li>
+                        <li><strong>Fault injection</strong>: 도구 중단, API 실패, 데이터 불일치 시뮬레이션</li>
+                        <li><strong>Playbook 준비</strong>: 인프라·에이전트 특화 이슈 대응 절차</li>
+                        <li><strong>Seamless handoff</strong>: 컨텍스트 유지하며 fallback 에이전트·사람 운영자로 전환</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="cta-box">
+                <h3>실전 적용 핵심</h3>
+                <p>이 프레임워크는 대부분의 AI 개발·배포 아키텍처에 적용 가능하지만, 여러분의 시스템은 고유한 특성과 의존성을 가집니다. 7차원 리스크 분석으로 자신의 워크로드를 분석하고, 기술적 복잡도가 아닌 <strong>사용자 임팩트와 비즈니스 중요도</strong>를 기준으로 우선순위를 정하세요. 복원력은 목적지가 아닌 지속적 여정입니다.</p>
+                <a href="https://aws.amazon.com/ko/blogs/architecture/build-resilient-generative-ai-agents/" class="cta-button" target="_blank">원문 읽기 →</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>핵심 요약</strong>: AWS는 AI 에이전트 복원력을 위한 7차원 리스크 분석 프레임워크(Foundation models, Orchestration, Infrastructure, Knowledge base, Tools, Security, Evaluation)를 제시하고, 5대 주요 장애 모드(Shared fate, Capacity, Latency, Incorrect response, Single point of failure)에 대한 구체적 완화 전략을 제공합니다. Bedrock Guardrails, 프롬프트 캐싱(85% 지연 감소), Cross-Region inference 등 AWS 서비스를 활용하여 프로덕션 AI 에이전트의 복원력을 확보할 수 있습니다.</p>
+            <p>출처: <a href="https://aws.amazon.com/ko/blogs/architecture/build-resilient-generative-ai-agents/" target="_blank">AWS Architecture Blog - Build Resilient Generative AI Agents</a></p>
+        </div>
+    </div>
+</body>
+</html>
+
