@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grab이 동남아 문서 처리를 위해 1B Vision LLM을 직접 만든 이유</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Pretendard Variable", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: #faf8f5;
+            color: #2d2d2d;
+            line-height: 1.7;
+            padding: 20px;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(201, 69, 31, 0.08);
+            animation: fade-in 0.6s ease;
+        }
+        
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00B14F 0%, #009640 100%);
+            padding: 48px 40px;
+            color: #ffffff;
+        }
+        
+        .header-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        
+        .header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+        
+        .header-meta {
+            font-size: 14px;
+            opacity: 0.85;
+            font-weight: 500;
+        }
+        
+        .content {
+            padding: 48px 40px;
+        }
+        
+        .intro {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #3d3d3d;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid #f0ebe5;
+            animation: fade-slide-up 0.6s ease 0.2s both;
+        }
+        
+        .intro p {
+            margin-bottom: 16px;
+        }
+        
+        .intro p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .intro strong {
+            color: #00B14F;
+            font-weight: 600;
+        }
+        
+        .intro ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 20px 0;
+        }
+        
+        .intro ul li {
+            padding-left: 28px;
+            margin-bottom: 10px;
+            position: relative;
+            line-height: 1.7;
+        }
+        
+        .intro ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #00B14F;
+            font-weight: 600;
+            font-size: 20px;
+        }
+        
+        @keyframes fade-slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            animation: fade-slide-up 0.6s ease both;
+        }
+        
+        .section:nth-child(2) { animation-delay: 0.3s; }
+        .section:nth-child(3) { animation-delay: 0.4s; }
+        .section:nth-child(4) { animation-delay: 0.5s; }
+        .section:nth-child(5) { animation-delay: 0.6s; }
+        
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #00B14F;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-emoji {
+            font-size: 28px;
+        }
+        
+        .section-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #3d3d3d;
+        }
+        
+        .section-content p {
+            margin-bottom: 16px;
+        }
+        
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .highlight-box {
+            background: #f0fff8;
+            border-left: 4px solid #00B14F;
+            padding: 20px 24px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .highlight-box p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .highlight-box strong {
+            color: #00B14F;
+        }
+        
+        .phase-box {
+            background: #ffffff;
+            border: 2px solid #00B14F;
+            padding: 24px;
+            margin: 20px 0;
+            border-radius: 12px;
+        }
+        
+        .phase-title {
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #00B14F;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .phase-content {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #3d3d3d;
+        }
+        
+        .phase-content p {
+            margin-bottom: 12px;
+        }
+        
+        .phase-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        
+        .metric-card {
+            background: #faf8f5;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f0ebe5;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 177, 79, 0.12);
+        }
+        
+        .metric-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #8d6e5f;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-value {
+            font-family: 'Fraunces', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #00B14F;
+            margin-bottom: 8px;
+        }
+        
+        .metric-desc {
+            font-size: 14px;
+            color: #5d5d5d;
+            line-height: 1.5;
+        }
+        
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 16px 0;
+        }
+        
+        .bullet-list li {
+            padding-left: 32px;
+            margin-bottom: 12px;
+            position: relative;
+            line-height: 1.7;
+        }
+        
+        .bullet-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #00B14F;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .stage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 24px 0;
+        }
+        
+        .stage-card {
+            background: #f0fff8;
+            border: 1px solid #00B14F;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stage-number {
+            font-family: 'Fraunces', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #00B14F;
+            margin-bottom: 8px;
+        }
+        
+        .stage-name {
+            font-weight: 700;
+            color: #2d2d2d;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .stage-desc {
+            font-size: 12px;
+            color: #5d5d5d;
+            line-height: 1.5;
+        }
+        
+        .cta-box {
+            background: linear-gradient(135deg, #00B14F 0%, #009640 100%);
+            color: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .cta-box h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+        
+        .cta-box p {
+            font-size: 15px;
+            line-height: 1.7;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #ffffff;
+            color: #00B14F;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer {
+            background: #faf8f5;
+            padding: 32px 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #8d6e5f;
+            border-top: 1px solid #f0ebe5;
+        }
+        
+        .footer p {
+            margin-bottom: 8px;
+        }
+        
+        .footer a {
+            color: #00B14F;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            
+            .header {
+                padding: 32px 24px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .content {
+                padding: 32px 24px;
+            }
+            
+            .intro {
+                font-size: 16px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+            
+            .metric-grid, .stage-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-label">Grab Engineering</div>
+            <h1>Grab이 동남아 문서 처리를 위해 1B Vision LLM을 직접 만든 이유</h1>
+            <div class="header-meta">태국어 70pp, 베트남어 40pp 정확도 개선 + ChatGPT보다 빠른 레이턴시</div>
+        </div>
+        
+        <div class="content">
+            <div class="intro">
+                <p>동남아 사용자 ID 카드로 eKYC 처리하려고 OCR 돌렸는데, 태국어가 완전 깨져서 이상한 문자들만 주르륵 나오는 경험 해보셨나요? 베트남어 운전면허증도 마찬가지고요. 그것도 프로덕션 환경에서 실제 사용자가 기다리는 상황인데 말이죠. "GPT-4 쓰자니 비싸고 느리고, 오픈소스는 정확도가..." 싶은 그 느낌.</p>
+                
+                <p>이런 문제가 생기는 이유는 동남아 지역이 <strong>언어와 문서 형식의 다양성</strong> 때문입니다. 전통적 OCR은 템플릿 다양성을 감당 못하고, 대형 상용 LLM(GPT-4, Gemini)은 동남아 언어 이해가 약해서 환각(hallucination)을 일으키거든요. 게다가 레이턴시도 높아서 P99가 P50의 3-4배까지 치솟죠. 오픈소스 Vision LLM은 효율적이지만 프로덕션급 정확도는 아니고요.</p>
+                
+                <p>이 글에서는 Grab이 이 딜레마를 어떻게 해결했는지—<strong>1B 파라미터 경량 Vision LLM을 처음부터 직접 만든 여정</strong>을 정리해 봅니다. 특히 다음 내용을 중심으로 살펴볼 거예요.</p>
+                
+                <ul>
+                    <li><strong>동남아 ID 카드 OCR이 전통 방식으로 안 되는 이유</strong> - 템플릿 다양성, 비라틴 스크립트, 상용 LLM 한계</li>
+                    <li><strong>LoRA에서 전체 파인튜닝으로 넘어가며 70pp 정확도 올린 과정</strong> - 3단계 실험 Phase 분석</li>
+                    <li><strong>Synthetic data와 Documint 자동 라벨링으로 학습 데이터 확보한 방법</strong> - Common Crawl + 파이프라인</li>
+                    <li><strong>Vision encoder + Language decoder 조합해 1B 경량 모델 만든 4단계</strong> - Projector → Vision tower → SEA OCR → Task tuning</li>
+                    <li><strong>ChatGPT보다 빠르고 정확한 프로덕션 Vision LLM 핵심 교훈</strong> - Full fine-tuning, 네이티브 해상도, 데이터 품질</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">🔬</span>
+                    3단계 실험: LoRA → 전체 파인튜닝 → 1B 커스텀 모델
+                </h2>
+                <div class="section-content">
+                    <p>Grab 팀은 Qwen2-VL 2B를 베이스 모델로 선택했습니다. 작아서 제한된 VRAM에서도 전체 파인튜닝이 가능하고, 동남아 언어(태국어, 베트남어) 토크나이저가 효율적이며, 무엇보다 <strong>동적 해상도(dynamic resolution)</strong>를 지원해서 이미지를 원본 해상도 그대로 처리할 수 있었죠. 텍스트 왜곡을 막는 게 OCR에선 결정적입니다.</p>
+                    
+                    <div class="phase-box">
+                        <div class="phase-title">📍 Phase 1: LoRA 실험</div>
+                        <div class="phase-content">
+                            <p>첫 시도는 <strong>Low-Rank Adaptation(LoRA)</strong>를 사용한 경량 파인튜닝이었습니다. 모델 파라미터를 최소한만 업데이트하여 컴퓨팅 자원을 아끼는 방식이죠.</p>
+                            <p><strong>결과</strong>: 라틴 스크립트(인도네시아어 문서)에서는 높은 field-level 정확도 달성. 하지만 태국어·베트남어 같은 비라틴 스크립트와 밀집된 작은 텍스트 레이아웃에서는 여전히 실패했습니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="phase-box">
+                        <div class="phase-title">🔥 Phase 2: 전체 파라미터 파인튜닝</div>
+                        <div class="phase-content">
+                            <p>실험을 통해 핵심 인사이트를 얻었습니다. 오픈소스 Vision LLM은 LLM 디코더 사전 학습에서 다국어 코퍼스를 광범위하게 다루지만, <strong>비전 인코더와 조인트 학습 시 동남아 언어의 시각적 텍스트가 부족</strong>했던 거죠.</p>
+                            <p>이를 해결하기 위해 LLAVA 방법론에 따라 <strong>2단계 학습</strong>을 수행했습니다.</p>
+                            <ul class="bullet-list">
+                                <li><strong>Stage 1 - Continual pre-training</strong>: 인도네시아어, 태국어, 베트남어, 영어 합성 OCR 데이터셋으로 비전 컴포넌트 학습. 동남아 스크립트의 독특한 시각적 패턴 습득</li>
+                                <li><strong>Stage 2 - Full-parameter fine-tuning</strong>: 비전 인코더, 프로젝터, 언어 모델 전체를 task-specific 문서 데이터로 파인튜닝</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Thai Documents</div>
+                            <div class="metric-value">+70pp</div>
+                            <div class="metric-desc">베이스라인 대비 정확도 향상</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Vietnamese Docs</div>
+                            <div class="metric-value">+40pp</div>
+                            <div class="metric-desc">베이스라인 대비 정확도 향상</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Model Size</div>
+                            <div class="metric-value">2B</div>
+                            <div class="metric-desc">Qwen2-VL 전체 파인튜닝</div>
+                        </div>
+                    </div>
+                    
+                    <div class="phase-box">
+                        <div class="phase-title">⚡ Phase 3: 1B 경량 모델 처음부터 구축</div>
+                        <div class="phase-content">
+                            <p>Qwen2-VL 2B 모델은 성공적이었지만, 전체 파인튜닝이 GPU 한계를 밀어붙였습니다. 리소스 최적화와 완벽한 맞춤화를 위해, Grab 팀은 <strong>1B 파라미터 경량 Vision LLM을 처음부터 조립</strong>하기로 결정했죠.</p>
+                            <p><strong>전략</strong>: 최고의 컴포넌트 조합</p>
+                            <ul class="bullet-list">
+                                <li><strong>Vision encoder</strong>: Qwen2-VL 2B의 강력한 비전 인코더</li>
+                                <li><strong>Language decoder</strong>: Qwen2.5 0.5B의 컴팩트하고 효율적인 디코더</li>
+                                <li><strong>Projector layer</strong>: 조정된 프로젝터로 두 컴포넌트 원활히 연결</li>
+                            </ul>
+                            <p>이렇게 만든 커스텀 ~1B 파라미터 Vision LLM은 학습과 배포 모두 최적화되었습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">📊</span>
+                    학습 데이터 생성: Synthetic + Documint 자동 라벨링
+                </h2>
+                <div class="section-content">
+                    <p>모델 학습에는 대량의 고품질 데이터가 필요합니다. Grab은 오픈소스 데이터와 내부 데이터를 효과적으로 결합했죠.</p>
+                    
+                    <p><strong>Synthetic OCR 데이터셋</strong></p>
+                    
+                    <p>대규모 온라인 텍스트 코퍼스인 <strong>Common Crawl</strong>에서 동남아 언어 텍스트를 추출했습니다. 그다음 자체 합성 데이터 파이프라인으로 다양한 폰트, 배경, 증강 기법을 적용하여 텍스트 이미지를 생성했죠. 데이터셋은 인도네시아어, 태국어, 베트남어, 영어를 포함하며, 각 이미지는 랜덤 문장 단락으로 구성됩니다.</p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>Documint: AI 기반 자동 라벨링 프레임워크</strong></p>
+                        <p>실험 결과, 문서 감지(detection)와 방향 보정(orientation correction)을 적용하면 OCR과 정보 추출이 크게 개선됩니다. Documint는 Grab 팀이 개발한 내부 플랫폼으로, 문서 이해를 위한 자동 라벨링 및 전처리 프레임워크입니다.</p>
+                    </div>
+                    
+                    <p><strong>Documint의 4가지 모듈</strong></p>
+                    
+                    <ul class="bullet-list">
+                        <li><strong>Detection module</strong>: 전체 사진에서 문서 영역 감지</li>
+                        <li><strong>Orientation module</strong>: 보정 각도 제공 (예: 문서가 뒤집혔으면 180도)</li>
+                        <li><strong>OCR module</strong>: 비정형 포맷으로 텍스트 값 반환</li>
+                        <li><strong>KIE module</strong>: 비정형 텍스트에서 JSON 값 반환</li>
+                    </ul>
+                    
+                    <p>Grab이 수집한 대량의 카드·문서를 이 파이프라인으로 처리하여 학습 라벨을 추출하고, 사람 리뷰어가 추가 정제하여 높은 라벨 정확도를 달성했습니다.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">🚀</span>
+                    4단계 학습 프로세스: 1B 모델 완성
+                </h2>
+                <div class="section-content">
+                    <p>새로운 커스텀 모델을 종합적인 4단계 프로세스로 학습했습니다.</p>
+                    
+                    <div class="stage-grid">
+                        <div class="stage-card">
+                            <div class="stage-number">1</div>
+                            <div class="stage-name">Projector Alignment</div>
+                            <div class="stage-desc">비전 인코더와 언어 디코더가 효과적으로 소통하도록 새 프로젝터 레이어 학습</div>
+                        </div>
+                        <div class="stage-card">
+                            <div class="stage-number">2</div>
+                            <div class="stage-name">Vision Tower Enhancement</div>
+                            <div class="stage-desc">공개 멀티모달 데이터셋(Visual Q&A, 일반 OCR, 이미지 캡셔닝)으로 비전 인코더 학습</div>
+                        </div>
+                        <div class="stage-card">
+                            <div class="stage-number">3</div>
+                            <div class="stage-name">SEA OCR Training</div>
+                            <div class="stage-desc">2가지 합성 OCR 데이터로 학습. 이 단계 없으면 비라틴 문서 성능 10% 하락</div>
+                        </div>
+                        <div class="stage-card">
+                            <div class="stage-number">4</div>
+                            <div class="stage-name">Task Fine-tuning</div>
+                            <div class="stage-desc">큐레이션된 문서 데이터셋으로 커스텀 1B 모델 전체 파라미터 파인튜닝</div>
+                        </div>
+                    </div>
+                    
+                    <p><strong>최종 결과</strong></p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>정확도</strong></p>
+                        <p>→ 더 큰 2B 모델과 비슷한 성능 달성, <strong>대부분의 문서 유형에서 3pp 차이 이내</strong></p>
+                        <p>→ 품질 증강 데이터셋으로 학습 시 강력한 일반화 유지</p>
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <p><strong>레이턴시</strong></p>
+                        <p>→ 2B 모델은 물론 전통 OCR 모델, 외부 API(ChatGPT, Gemini)보다 훨씬 빠름</p>
+                        <p>→ 외부 API의 가장 큰 약점: <strong>P99 레이턴시가 P50의 3-4배</strong> → Grab의 대규모 롤아웃에 부적합</p>
+                        <p>→ 자체 1B 모델은 안정적이고 예측 가능한 레이턴시 제공</p>
+                    </div>
+                    
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Model Size</div>
+                            <div class="metric-value">~1B</div>
+                            <div class="metric-desc">2B 대비 경량화</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Accuracy Gap</div>
+                            <div class="metric-value">3pp</div>
+                            <div class="metric-desc">2B 모델과의 차이</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">P99 Latency</div>
+                            <div class="metric-value">안정적</div>
+                            <div class="metric-desc">ChatGPT/Gemini 3-4x vs 자체 모델</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-emoji">💡</span>
+                    핵심 교훈: 프로덕션 Vision LLM 성공 요인
+                </h2>
+                <div class="section-content">
+                    <p>Grab의 여정이 주는 결정적 인사이트들입니다.</p>
+                    
+                    <ul class="bullet-list">
+                        <li><strong>Full fine-tuning이 압도적 우월</strong>: 특화된 비라틴 스크립트 도메인에서는 전체 파라미터 파인튜닝이 LoRA를 극적으로 능가합니다. 태국어 +70pp, 베트남어 +40pp가 증명하죠.</li>
+                        <li><strong>경량 모델도 효과적</strong>: 처음부터 구축하고 종합적으로 학습한 작은 모델(~1B)이 near state-of-the-art 결과를 달성할 수 있습니다. 커스텀 아키텍처의 유효성 검증.</li>
+                        <li><strong>베이스 모델이 중요</strong>: 타겟 언어를 네이티브로 지원하는 베이스 모델에서 시작하는 것이 성공의 핵심. Qwen2-VL의 동남아 토크나이저 효율성이 결정적이었습니다.</li>
+                        <li><strong>데이터가 왕</strong>: 세심한 데이터셋 전처리와 증강이 일관되고 정확한 결과를 달성하는 데 결정적 역할. Documint 자동 라벨링 + 사람 검증의 조합.</li>
+                        <li><strong>네이티브 해상도가 게임 체인저</strong>: 동적 이미지 해상도를 처리하는 모델은 텍스트 무결성을 보존하여 OCR 능력을 극적으로 향상. 이미지 리사이즈나 크롭 시 텍스트 왜곡 방지.</li>
+                    </ul>
+                    
+                    <div class="highlight-box">
+                        <p><strong>프로덕션 배포 시사점</strong></p>
+                        <p>특화된 Vision LLM은 전통적인 OCR 파이프라인을 <strong>단일, 통합, 고정확도 모델</strong>로 효과적으로 대체할 수 있습니다. Detection → Orientation → OCR → KIE의 다단계 파이프라인 대신, 하나의 모델이 모든 걸 처리하죠. 이는 대규모 문서 처리의 새로운 가능성을 열었습니다.</p>
+                    </div>
+                    
+                    <p><strong>다음 단계</strong></p>
+                    
+                    <ul class="bullet-list">
+                        <li><strong>더 스마트하고 적응력 있는 모델</strong>: Chain of Thought 기반 OCR·KIE 모델 개발하여 일반화 능력 강화</li>
+                        <li><strong>동남아 전역 확장</strong>: 미얀마, 캄보디아 등 모든 Grab 시장으로 고급 문서 처리 확대</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="cta-box">
+                <h3>전문화된 작은 모델의 승리</h3>
+                <p>Grab의 사례는 <strong>전략적 학습과 고품질 데이터</strong>가 작고 전문화된 모델로도 놀라운 효율성과 효과를 달성할 수 있음을 증명합니다. GPT-4나 Gemini 같은 범용 대형 모델보다, 도메인에 맞춰 처음부터 설계한 1B 모델이 프로덕션에서 더 나은 선택일 수 있습니다.</p>
+                <a href="https://engineering.grab.com/custom-vision-llm-at-grab" class="cta-button" target="_blank">원문 읽기 →</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>핵심 요약</strong>: Grab은 동남아 문서 처리를 위해 Qwen2-VL 2B를 베이스로 시작해 LoRA 실험 → 전체 파인튜닝(태국어 +70pp, 베트남어 +40pp) → 1B 커스텀 모델 구축(2B와 3pp 차이)의 3단계 여정을 거쳤습니다. Common Crawl 합성 데이터 + Documint 자동 라벨링으로 학습 데이터를 확보하고, 4단계 학습(Projector → Vision tower → SEA OCR → Task tuning)으로 ChatGPT/Gemini보다 빠르고 정확한 프로덕션 Vision LLM을 완성했습니다.</p>
+            <p>출처: <a href="https://engineering.grab.com/custom-vision-llm-at-grab" target="_blank">Grab Engineering - How we built a custom vision LLM to improve document processing at Grab</a></p>
+        </div>
+    </div>
+</body>
+</html>
+
