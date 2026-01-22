@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node scripts/analyze_issues.js:*)",
+      "Bash(node scripts/analyze_requests.js:*)"
+    ]
+  }
+}
