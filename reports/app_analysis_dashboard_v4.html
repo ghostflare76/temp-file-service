@@ -2084,50 +2084,39 @@
         <!-- KPI Gauges -->
         <div class="kpi-section">
             <div class="section-title">Success Metrics (KPI)</div>
-            <div class="kpi-grid">
-                <div class="kpi-card" data-delay="0">
-                    <div class="kpi-gauge">
+            <div style="display: flex; justify-content: center; gap: var(--space-8); max-width: 1000px; margin: 0 auto;">
+                <div class="kpi-card" data-delay="0" style="flex: 1; max-width: 300px;">
+                    <div class="kpi-gauge" style="width: 140px; height: 140px; margin-bottom: var(--space-6);">
                         <svg viewBox="0 0 100 100">
-                            <circle class="kpi-gauge-bg" cx="50" cy="50" r="45"/>
-                            <circle class="kpi-gauge-fill" cx="50" cy="50" r="45" data-target="50"/>
+                            <circle class="kpi-gauge-bg" cx="50" cy="50" r="45" style="stroke-width: 10;"/>
+                            <circle class="kpi-gauge-fill" cx="50" cy="50" r="45" data-target="50" style="stroke-width: 10;"/>
                         </svg>
-                        <div class="kpi-gauge-value">-50%</div>
+                        <div class="kpi-gauge-value" style="font-size: var(--text-3xl);">-50%</div>
                     </div>
-                    <div class="kpi-label">1점/2점 리뷰</div>
-                    <div class="kpi-target">감소 목표</div>
+                    <div class="kpi-label" style="font-size: var(--text-sm); margin-bottom: var(--space-3);">1점/2점 리뷰</div>
+                    <div class="kpi-target" style="font-size: var(--text-base);">감소 목표</div>
                 </div>
-                <div class="kpi-card" data-delay="100">
-                    <div class="kpi-gauge">
+                <div class="kpi-card" data-delay="100" style="flex: 1; max-width: 300px;">
+                    <div class="kpi-gauge" style="width: 140px; height: 140px; margin-bottom: var(--space-6);">
                         <svg viewBox="0 0 100 100">
-                            <circle class="kpi-gauge-bg" cx="50" cy="50" r="45"/>
-                            <circle class="kpi-gauge-fill" cx="50" cy="50" r="45" data-target="99"/>
+                            <circle class="kpi-gauge-bg" cx="50" cy="50" r="45" style="stroke-width: 10;"/>
+                            <circle class="kpi-gauge-fill" cx="50" cy="50" r="45" data-target="99" style="stroke-width: 10;"/>
                         </svg>
-                        <div class="kpi-gauge-value">99%+</div>
+                        <div class="kpi-gauge-value" style="font-size: var(--text-3xl);">99%+</div>
                     </div>
-                    <div class="kpi-label">로그인 성공률</div>
-                    <div class="kpi-target">달성 목표</div>
+                    <div class="kpi-label" style="font-size: var(--text-sm); margin-bottom: var(--space-3);">로그인 성공률</div>
+                    <div class="kpi-target" style="font-size: var(--text-base);">달성 목표</div>
                 </div>
-                <div class="kpi-card" data-delay="200">
-                    <div class="kpi-gauge">
+                <div class="kpi-card" data-delay="200" style="flex: 1; max-width: 300px;">
+                    <div class="kpi-gauge" style="width: 140px; height: 140px; margin-bottom: var(--space-6);">
                         <svg viewBox="0 0 100 100">
-                            <circle class="kpi-gauge-bg" cx="50" cy="50" r="45"/>
-                            <circle class="kpi-gauge-fill" cx="50" cy="50" r="45" data-target="95"/>
+                            <circle class="kpi-gauge-bg" cx="50" cy="50" r="45" style="stroke-width: 10;"/>
+                            <circle class="kpi-gauge-fill" cx="50" cy="50" r="45" data-target="99.5" style="stroke-width: 10;"/>
                         </svg>
-                        <div class="kpi-gauge-value">95%+</div>
+                        <div class="kpi-gauge-value" style="font-size: var(--text-3xl);">99.5%+</div>
                     </div>
-                    <div class="kpi-label">원격 제어 성공률</div>
-                    <div class="kpi-target">달성 목표</div>
-                </div>
-                <div class="kpi-card" data-delay="300">
-                    <div class="kpi-gauge">
-                        <svg viewBox="0 0 100 100">
-                            <circle class="kpi-gauge-bg" cx="50" cy="50" r="45"/>
-                            <circle class="kpi-gauge-fill" cx="50" cy="50" r="45" data-target="99.5"/>
-                        </svg>
-                        <div class="kpi-gauge-value">99.5%+</div>
-                    </div>
-                    <div class="kpi-label">Crash-free Rate</div>
-                    <div class="kpi-target">달성 목표</div>
+                    <div class="kpi-label" style="font-size: var(--text-sm); margin-bottom: var(--space-3);">Crash-free Rate</div>
+                    <div class="kpi-target" style="font-size: var(--text-base);">달성 목표</div>
                 </div>
             </div>
         </div>
